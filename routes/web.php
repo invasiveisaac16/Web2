@@ -8,33 +8,12 @@ use App\Http\Controllers\PostController;
 use App\Models\Post;
 use App\Http\Controllers\CommentController;
 
-Route::get('/', function () {
-    // Obtenemos los posts ordenados por el más reciente
-    // 'with' carga la relación de usuario y categoría en UNA sola consulta 
-    $posts = Post::with(['user', 'category'])->latest()->get();
+use App\Http\Controllers\BlogController;
 
-    return view('welcome', [
-        'posts' => $posts
-    ]);
-})->name('home');
+Route::get('/', [BlogController::class, 'index'])->name('home');
 
 // Ruta para ver un post individual (Pública)
-// Usamos Route Model Binding: Laravel busca el Post automáticamente por su ID
-Route::get('/blog/{post}', function (Post $post) {
-    
-    // OPTIMIZACIÓN CRÍTICA PARA EL PROFESOR:
-    // Como el $post ya "llegó" inyectado a la función, usamos ->load() en vez de ::with()
-    // Cargamos:
-    // 1. 'user' => El autor del post.
-    // 2. 'category' => La categoría del post.
-    // 3. 'comments.user' => Cargamos los comentarios Y, dentro de ellos, al autor de cada comentario.
-    
-    $post->load(['user', 'category', 'comments.user']);
-
-    return view('post-show', [
-        'post' => $post
-    ]);
-})->name('blog.show');
+Route::get('/blog/{post}', [BlogController::class, 'show'])->name('blog.show');
 
 // ... rutas auth ...
 

@@ -96,7 +96,16 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <a href="{{ route('posts.edit', $post) }}" class="text-xs text-blue-600 dark:text-blue-400 hover:underline">Editar</a>
+                                    <div class="flex items-center space-x-3">
+                                        <a href="{{ route('posts.edit', $post) }}" class="text-xs text-blue-600 dark:text-blue-400 hover:underline">Editar</a>
+                                        <form action="{{ route('posts.destroy', $post) }}" method="POST" onsubmit="return confirm('¿Estás seguro de querer eliminar este post?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-xs text-red-600 dark:text-red-400 hover:underline">
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             @empty
                                 <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No hay actividad reciente.</p>
