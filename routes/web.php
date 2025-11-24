@@ -16,7 +16,7 @@ Route::get('/', function () {
     return view('welcome', [
         'posts' => $posts
     ]);
-});
+})->name('home');
 
 // Ruta para ver un post individual (Pública)
 // Usamos Route Model Binding: Laravel busca el Post automáticamente por su ID
@@ -39,7 +39,12 @@ Route::get('/blog/{post}', function (Post $post) {
 // ... rutas auth ...
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('dashboard', [
+        'postsCount' => \App\Models\Post::count(),
+        'categoriesCount' => \App\Models\Category::count(),
+        'commentsCount' => \App\Models\Comment::count(),
+        'recentPosts' => \App\Models\Post::latest()->take(5)->get()
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {

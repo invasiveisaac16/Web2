@@ -34,6 +34,15 @@
         <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
             
             <article class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden mb-10">
+                <div class="relative h-96 w-full overflow-hidden">
+                    @if($post->image_path)
+                        <img src="{{ asset('storage/' . $post->image_path) }}" alt="{{ $post->title }}" class="w-full h-full object-cover">
+                    @else
+                        <div class="absolute inset-0 bg-gradient-to-br from-primary-500 to-secondary-600 opacity-90"></div>
+                    @endif
+                    <div class="absolute inset-0 bg-black/20"></div>
+                </div>
+
                 <div class="p-8">
                     <div class="flex items-center justify-between mb-6">
                         <span class="px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-bold rounded-full dark:bg-indigo-900 dark:text-indigo-200">

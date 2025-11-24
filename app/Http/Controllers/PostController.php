@@ -46,8 +46,9 @@ class PostController extends Controller
         // 1. Validación (Reglas para cada campo)
         $request->validate([
             'title' => 'required|string|max:255',
-            'category_id' => 'required|integer|exists:categories,id', // 'exists' asegura que la categoría sea real
+            'category_id' => 'required|integer|exists:categories,id',
             'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         // 2. Creación del Post
@@ -55,9 +56,13 @@ class PostController extends Controller
         $post->title = $request->input('title');
         $post->content = $request->input('content');
         $post->category_id = $request->input('category_id');
+        $post->user_id = Auth::id();
 
-        // ¡Paso clave! Asigna el ID del usuario que está logueado
-        $post->user_id = Auth::id(); 
+        // Manejo de la imagen
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('posts', 'public');
+            $post->image_path = $imagePath;
+        } 
 
         $post->save();
 
@@ -99,14 +104,24 @@ class PostController extends Controller
             'title' => 'required|string|max:255',
             'category_id' => 'required|integer|exists:categories,id',
             'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         // 2. Actualización
-        // (Laravel ya encontró el post por nosotros)
         $post->title = $request->input('title');
         $post->content = $request->input('content');
         $post->category_id = $request->input('category_id');
-        // No cambiamos el user_id, el autor original se mantiene
+
+        // Manejo de la imagen
+        if ($request->hasFile('image')) {
+            // Eliminar imagen anterior si existe
+            if ($post->image_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($post->image_path);
+            }
+            $imagePath = $request->file('image')->store('posts', 'public');
+            $post->image_path = $imagePath;
+        }
+
         $post->save();
 
         // 3. Redirección
@@ -120,7 +135,9 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         // 1. Borrado
-        // (Laravel ya encontró el post)
+        if ($post->image_path) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($post->image_path);
+        }
         $post->delete();
 
         // 2. Redirección
