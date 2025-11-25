@@ -14,9 +14,15 @@ class PostController extends Controller
      */
     public function index()
     {
-        // 1. Obtiene todos los posts (los más nuevos primero)
-        //    'with' carga también la info de la categoría y el autor para no hacer mil consultas
-        $posts = Post::with('category', 'user')->latest()->get();
+        // 1. Obtiene los posts
+        $query = Post::with('category', 'user')->latest();
+
+        // Si NO es admin, solo ve sus propios posts
+        if (!Auth::user()->isAdmin()) {
+            $query->where('user_id', Auth::id());
+        }
+
+        $posts = $query->get();
 
         // 2. Envía los posts a la nueva vista
         return view('posts.index', [
@@ -66,6 +72,9 @@ class PostController extends Controller
 
         $post->save();
 
+        // Clear Cache
+        \Illuminate\Support\Facades\Cache::forget('dashboard_stats');
+
         // 3. Redirección
         return redirect()->route('posts.index')
                         ->with('success', '¡Post creado exitosamente!');
@@ -84,6 +93,8 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
+        \Illuminate\Support\Facades\Gate::authorize('update', $post);
+
         // 1. Obtiene todas las categorías (para el dropdown)
         $categories = Category::all();
 
@@ -99,6 +110,8 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
+        \Illuminate\Support\Facades\Gate::authorize('update', $post);
+
         // 1. Validación (igual que en 'store')
         $request->validate([
             'title' => 'required|string|max:255',
@@ -124,6 +137,9 @@ class PostController extends Controller
 
         $post->save();
 
+        // Clear Cache
+        \Illuminate\Support\Facades\Cache::forget('dashboard_stats');
+
         // 3. Redirección
         return redirect()->route('posts.index')
                         ->with('success', '¡Post actualizado exitosamente!');
@@ -134,11 +150,16 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        \Illuminate\Support\Facades\Gate::authorize('delete', $post);
+
         // 1. Borrado
         if ($post->image_path) {
             \Illuminate\Support\Facades\Storage::disk('public')->delete($post->image_path);
         }
         $post->delete();
+
+        // Clear Cache
+        \Illuminate\Support\Facades\Cache::forget('dashboard_stats');
 
         // 2. Redirección
         return redirect()->route('posts.index')

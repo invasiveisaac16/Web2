@@ -50,6 +50,79 @@
                 </div>
             </div>
 
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-xl p-6 border border-gray-100 dark:border-gray-700">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Posts por Categoría</h3>
+                    <canvas id="categoryChart"></canvas>
+                </div>
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-xl p-6 border border-gray-100 dark:border-gray-700">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Actividad (Últimos 7 días)</h3>
+                    <canvas id="activityChart"></canvas>
+                </div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                // Category Chart
+                const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+                new Chart(ctxCategory, {
+                    type: 'doughnut',
+                    data: {
+                        labels: {!! json_encode($postsByCategory->pluck('name')) !!},
+                        datasets: [{
+                            data: {!! json_encode($postsByCategory->pluck('posts_count')) !!},
+                            backgroundColor: [
+                                '#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#6366f1'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: '#9ca3af' }
+                            }
+                        }
+                    }
+                });
+
+                // Activity Chart
+                const ctxActivity = document.getElementById('activityChart').getContext('2d');
+                new Chart(ctxActivity, {
+                    type: 'line',
+                    data: {
+                        labels: {!! json_encode($postsPerDay->pluck('date')) !!},
+                        datasets: [{
+                            label: 'Posts Publicados',
+                            data: {!! json_encode($postsPerDay->pluck('count')) !!},
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1, color: '#9ca3af' },
+                                grid: { color: '#374151' }
+                            },
+                            x: {
+                                ticks: { color: '#9ca3af' },
+                                grid: { display: false }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            </script>
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Quick Actions -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-xl border border-gray-100 dark:border-gray-700">
@@ -60,18 +133,25 @@
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                 Nuevo Post
                             </a>
-                            <a href="{{ route('categories.create') }}" class="flex items-center justify-center p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-lg text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                                Nueva Categoría
-                            </a>
+                            
+                            @if(auth()->user()->isAdmin())
+                                <a href="{{ route('categories.create') }}" class="flex items-center justify-center p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-lg text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                    Nueva Categoría
+                                </a>
+                            @endif
+
                             <a href="{{ route('posts.index') }}" class="flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                                 Gestionar Posts
                             </a>
-                            <a href="{{ route('categories.index') }}" class="flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
-                                Gestionar Categorías
-                            </a>
+
+                            @if(auth()->user()->isAdmin())
+                                <a href="{{ route('categories.index') }}" class="flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
+                                    Gestionar Categorías
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>

@@ -12,14 +12,16 @@ class BlogController extends Controller
      */
     public function index()
     {
-        $posts = Post::with(['user', 'category'])
-            ->latest()
-            ->when(request('search'), function($query) {
-                $query->where('title', 'like', '%' . request('search') . '%')
-                      ->orWhere('content', 'like', '%' . request('search') . '%');
-            })
-            ->paginate(9)
-            ->withQueryString();
+        $page = request('page', 1);
+        $search = request('search', '');
+        
+        $posts = \Illuminate\Support\Facades\Cache::remember("posts_index_{$page}_{$search}", 60, function () {
+            return Post::with(['user', 'category'])
+                ->latest()
+                ->filter(request(['search']))
+                ->paginate(9)
+                ->withQueryString();
+        });
 
         return view('welcome', [
             'posts' => $posts

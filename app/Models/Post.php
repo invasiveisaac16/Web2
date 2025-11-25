@@ -27,4 +27,14 @@ class Post extends Model
         // Opcional: Esto asume que añadirás una columna 'user_id'
         return $this->belongsTo(User::class);
     }
+
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? false, function($query, $search) {
+            $query->where(function($query) use ($search) {
+                $query->where('title', 'like', '%' . $search . '%')
+                      ->orWhere('content', 'like', '%' . $search . '%');
+            });
+        });
+    }
 }

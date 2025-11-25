@@ -23,6 +23,9 @@ class CommentController extends Controller
             'user_id' => Auth::id(), // Asignamos el ID del usuario conectado
         ]);
 
+        // Clear Cache
+        \Illuminate\Support\Facades\Cache::forget('dashboard_stats');
+
         // 3. Redirigir de vuelta al post con un mensaje de éxito
         return back()->with('success', '¡Comentario publicado correctamente!');
     }
