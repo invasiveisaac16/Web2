@@ -8,12 +8,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
 </head>
 <body class="font-sans antialiased bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 selection:bg-primary-500 selection:text-white">
     
     <!-- Navigation Overlay -->
     @if (Route::has('login'))
-        <div class="fixed top-0 right-0 p-6 text-right z-50">
+        <div class="fixed top-0 right-0 p-6 text-right z-50 flex items-center gap-4">
+            <x-theme-toggle />
             @auth
                 <a href="{{ url('/dashboard') }}" class="font-medium text-gray-600 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white transition-colors">Gestión</a>
             @else
@@ -29,16 +37,16 @@
     <div class="min-h-screen flex flex-col">
         <!-- Hero Section -->
         <header class="relative pt-32 pb-20 px-6 text-center overflow-hidden">
-            <div class="absolute inset-0 -z-10 opacity-30 blur-3xl bg-gradient-to-tr from-primary-200 to-secondary-200 dark:from-primary-900 dark:to-secondary-900 animate-pulse-slow"></div>
+            <div class="gsap-hero-bg absolute inset-0 -z-10 opacity-30 blur-3xl bg-gradient-to-tr from-primary-200 to-secondary-200 dark:from-primary-900 dark:to-secondary-900"></div>
             
-            <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-secondary-600 dark:from-primary-400 dark:to-secondary-400 animate-fade-in">
+            <h1 class="gsap-hero-title text-5xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-secondary-600 dark:from-primary-400 dark:to-secondary-400 opacity-0 translate-y-10">
                 SuperBlog
             </h1>
-            <p class="mt-6 text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto animate-slide-up" style="animation-delay: 0.1s;">
+            <p class="gsap-hero-text mt-6 text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto opacity-0 translate-y-10">
                 Explora ideas, tutoriales y noticias sobre el desarrollo web moderno.
             </p>
         <!-- Search Form -->
-            <div class="mt-8 max-w-md mx-auto animate-slide-up" style="animation-delay: 0.2s;">
+            <div class="gsap-search-form mt-8 max-w-md mx-auto opacity-0 translate-y-10">
                 <form action="{{ route('home') }}" method="GET" class="relative">
                     <input type="text" 
                            name="search" 
@@ -57,7 +65,7 @@
         <main class="flex-grow max-w-7xl mx-auto px-6 lg:px-8 w-full pb-20">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                 @forelse ($posts as $post)
-                    <x-post-card :post="$post" style="animation-delay: {{ $loop->iteration * 0.1 }}s;" />
+                    <x-post-card :post="$post" />
                 @empty
                     <div class="col-span-full text-center py-20">
                         <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">

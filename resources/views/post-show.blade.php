@@ -7,6 +7,13 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
 </head>
 <body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
 
@@ -20,7 +27,8 @@
                             &larr; Volver al Blog
                         </a>
                     </div>
-                    <div class="flex items-center">
+                    <div class="flex items-center gap-4">
+                        <x-theme-toggle />
                         @auth
                             <a href="{{ url('/dashboard') }}" class="text-gray-600 dark:text-gray-300 hover:text-gray-900">Dashboard</a>
                         @else
@@ -36,7 +44,7 @@
             <article class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden mb-10">
                 <div class="relative h-96 w-full overflow-hidden">
                     @if($post->image_path)
-                        <img src="{{ asset('storage/' . $post->image_path) }}" alt="{{ $post->title }}" class="w-full h-full object-cover">
+                        <img src="{{ Str::startsWith($post->image_path, 'http') ? $post->image_path : asset('storage/' . $post->image_path) }}" alt="{{ $post->title }}" class="w-full h-full object-cover">
                     @else
                         <div class="absolute inset-0 bg-gradient-to-br from-primary-500 to-secondary-600 opacity-90"></div>
                     @endif

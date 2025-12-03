@@ -33,5 +33,11 @@ class DatabaseSeeder extends Seeder
                 'role' => 'admin',
             ]
         );
+
+        // Create Categories
+        \App\Models\Category::factory(10)->create();
+
+        // Create Posts
+        \App\Models\Post::factory(1000)->create();
     }
 }
