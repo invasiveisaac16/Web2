@@ -1,6 +1,6 @@
 @props(['post'])
 
-<article {{ $attributes->merge(['class' => 'gsap-post-card relative group bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col h-full opacity-0 translate-y-10']) }}>
+<article {{ $attributes->merge(['class' => 'gsap-post-card relative group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col h-full opacity-0 translate-y-10']) }}>
     <div class="h-48 overflow-hidden relative">
         @if($post->image_path)
             <img src="{{ Str::startsWith($post->image_path, 'http') ? $post->image_path : asset('storage/' . $post->image_path) }}" alt="{{ $post->title }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500">

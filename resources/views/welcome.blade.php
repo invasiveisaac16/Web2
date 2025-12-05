@@ -54,7 +54,7 @@
                            placeholder="Buscar artículos..." 
                            class="w-full px-5 py-3 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent shadow-sm transition-all"
                     >
-                    <button type="submit" class="absolute right-2 top-1.5 p-1.5 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors">
+                    <button type="submit" class="gsap-button absolute right-2 top-1.5 p-1.5 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </button>
                 </form>
