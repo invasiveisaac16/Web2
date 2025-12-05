@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'test@example.com'],
             [
                 'name' => 'Test User',
+                'phone' => '1234567890',
                 'password' => \Illuminate\Support\Facades\Hash::make('password'),
             ]
         );
@@ -29,10 +30,14 @@ class DatabaseSeeder extends Seeder
             ['email' => 'prueba@gmail.com'],
             [
                 'name' => 'Admin User',
+                'phone' => '0987654321',
                 'password' => \Illuminate\Support\Facades\Hash::make('password'),
                 'role' => 'admin',
             ]
         );
+
+        // Create 98 additional users
+        User::factory(98)->create();
 
         // Create Categories
         \App\Models\Category::factory(10)->create();
